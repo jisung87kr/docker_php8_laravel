@@ -31,9 +31,8 @@ services:
       - MYSQL_USER="${MYSQL_USER}"
       - MYSQL_PASSWORD="${MYSQL_PASSWORD}"
     volumes:
-      - ./db_data:/var/lib/mysql/root
+      - ./db_data:/var/lib/mysql
       - ./_docker/conf/mariadb/my.cnf:/etc/mysql/my.cnf
-      - ./_docker/log/mariadb:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
