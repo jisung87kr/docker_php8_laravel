@@ -1,8 +1,5 @@
 version: "3.2"
 
-volumes:
-  mysql_db_laravel:
-
 services:
   web:
     build:
@@ -34,7 +31,7 @@ services:
       - MYSQL_USER="${MYSQL_USER}"
       - MYSQL_PASSWORD="${MYSQL_PASSWORD}"
     volumes:
-      - mysql_db_laravel:/var/lib/mysql/root
+      - ./db_data:/var/lib/mysql/root
       - ./_docker/conf/mariadb/my.cnf:/etc/mysql/my.cnf
       - ./_docker/log/mariadb:/var/lib/mysql
 
