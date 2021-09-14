@@ -5,12 +5,13 @@ RUN apt-get update && apt-get install -y \
         libpng-dev \
         vim \
         zip \
-        nodejs \
-        npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install mysqli mysqli pdo pdo_mysql \
     && a2enmod rewrite
+
+RUN curl -sL "https://deb.nodesource.com/setup_14.x" | bash -
+RUN apt-get install -y nodejs
 
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug

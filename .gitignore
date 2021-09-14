@@ -1,3 +1,5 @@
 .env
 .idea
 _docker/log
+./db_data
+./public_html
