@@ -1,5 +1,8 @@
 version: "3.2"
 
+volumes:
+  db_data : {}
+
 services:
   web:
     build:
@@ -31,7 +34,7 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
-      - ./db_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
       - ./_docker/conf/mariadb/my.cnf:/etc/mysql/my.cnf
 
   phpmyadmin:
