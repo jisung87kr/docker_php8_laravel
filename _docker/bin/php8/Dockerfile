@@ -1,17 +1,31 @@
 FROM php:8.0.3-apache
+
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng-dev \
         vim \
         zip \
+        libfontconfig \
+        zlib1g \
+        libxrender1 \
+        libxext6 \
+        libx11-6 \
+        fontconfig \
+        xfonts-75dpi \
+        xfonts-base \
+        wget \
+        git \
+        imagemagick \
+        libmagickwand-dev \
+        libmagickcore-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install mysqli mysqli pdo pdo_mysql \
     && a2enmod rewrite
 
-RUN curl -sL "https://deb.nodesource.com/setup_14.x" | bash -
-RUN apt-get install -y nodejs
+RUN apt-get install -y nodejs \
+    npm
 
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
@@ -22,5 +36,13 @@ RUN php composer-setup.php
 RUN php -r "unlink('composer-setup.php');"
 RUN mv composer.phar /usr/local/bin/composer
 RUN composer global require laravel/installer
+
+RUN cd /var/www/html
+RUN wget 'https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb' -P /var/www/html
+RUN dpkg -i 'wkhtmltox_0.12.6-1.buster_amd64.deb'
+
+RUN curl -o nanumfont.zip http://cdn.naver.com/naver/NanumFont/fontfiles/NanumFont_TTF_ALL.zip
+RUN unzip -d /usr/share/fonts/nanum nanumfont.zip
+RUN fc-cache -f -v
 
 ENV PATH $PATH:~/.composer/vendor/bin
