@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install mysqli mysqli pdo pdo_mysql \
     && docker-php-ext-install bz2 \
-    && a2enmod rewrite
+    && a2enmod rewrite \
     && a2enmod vhost_alias
 
 RUN apt-get install -y nodejs \
