@@ -9,6 +9,7 @@ services:
       context: ./_docker/bin/php8
     restart: always
     container_name: php8-webserver
+    privileged: true
     ports:
       - "${HTTP_PORT}:80"
       - "${HTTPS_PORT}:8080"
@@ -26,6 +27,7 @@ services:
       context: ./_docker/bin/php74
     restart: always
     container_name: php74-webserver
+    privileged: true
     ports:
       - "${PHP74_HTTP_PORT}:80"
       - "${PHP74_HTTPS_PORT}:8080"
@@ -34,6 +36,26 @@ services:
       - ./_docker/conf/php74/php.ini:/usr/local/etc/php/php.ini
       - ./_docker/conf/php74/apache2.conf:/etc/apache2/apache2.conf
       - ./_docker/conf/php74/000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - /var/run/docker.sock:/var/run/docker.sock
+      #- ./_docker/log/php8/:/var/log/apache2
+    links:
+      - "db:mariadb"
+
+  web3:
+    build:
+      context: ./_docker/bin/php81
+    restart: always
+    container_name: php81-webserver
+    privileged: true
+    ports:
+      - "${HTTP81_PORT}:80"
+      - "${HTTPS81_PORT}:8080"
+      - "8000:8000"
+    volumes:
+      - ./public_html:/var/www/html
+      - ./_docker/conf/php8/php.ini:/usr/local/etc/php/php.ini
+      - ./_docker/conf/php8/apache2.conf:/etc/apache2/apache2.conf
+      - ./_docker/conf/php8/000-default.conf:/etc/apache2/sites-available/000-default.conf
       #- ./_docker/log/php8/:/var/log/apache2
     links:
       - "db:mariadb"
@@ -54,14 +76,42 @@ services:
       - db_data:/var/lib/mysql
       - ./_docker/conf/mariadb/my.cnf:/etc/mysql/my.cnf
 
- # phpmyadmin:
- #   image: phpmyadmin/phpmyadmin
- #   restart: always
- #   container_name: phpmyadmin_laravel
- #   ports:
- #     - '${PHPMYADMIN_PORT}:80'
- #   environment:
- #     PMA_HOST: db
- #     MYSQL_ROOT_PASSWORD: password
- #   links:
- #     - db
+  python:
+    image: jisung87kr/ubuntu:selenium
+    restart: always
+    container_name: ubuntu_python
+    tty: true
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 9928:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 111111
+
+  mongo-express:
+      image: mongo-express
+      restart: always
+      ports:
+        - 9929:8081
+      environment:
+        ME_CONFIG_MONGODB_ADMINUSERNAME: root
+        ME_CONFIG_MONGODB_ADMINPASSWORD: 111111
+        ME_CONFIG_MONGODB_URL: mongodb://root:111111@mongo:27017/
+      links:
+        - "mongo:mongo"
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    container_name: phpmyadmin_laravel
+    ports:
+      - '${PHPMYADMIN_PORT}:80'
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: password
+    links:
+      - db
+
+
